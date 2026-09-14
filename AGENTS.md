@@ -18,6 +18,9 @@ for folder structure.
 - Types and interfaces: in `src/types/`, exported as `interface Pokemon { ... }`.
 - Styling: Tailwind classes only. No CSS modules, no per-component `.css` files.
 - Comments: only to explain "why", not "what".
+- Never call setState synchronously inside a useEffect body. React's
+  `react-hooks/set-state-in-effect` rule rejects this. Mutate state from
+  event handlers or external callbacks instead.
 
 ## Hard rules
 - **Never** hardcode API URLs outside `src/lib/pokeapi.ts`.
