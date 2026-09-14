@@ -52,6 +52,7 @@ export interface PokemonDetail {
   height: number;
   weight: number;
   sprites: PokemonSprites;
+  species: NamedApiResource;
   types: PokemonTypeSlot[];
   stats: PokemonStat[];
   abilities: PokemonAbility[];
