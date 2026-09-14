@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Pagination } from "./components/Pagination.tsx";
 import { PokemonGrid } from "./components/PokemonGrid.tsx";
+import { PokemonModal } from "./components/PokemonModal.tsx";
 import { SearchBar } from "./components/SearchBar.tsx";
 import { TypeFilter } from "./components/TypeFilter.tsx";
 import { ErrorMessage } from "./components/ui/ErrorMessage.tsx";
@@ -24,6 +26,9 @@ function App() {
     totalPages,
     retry,
   } = usePokemonIndex();
+  const [selectedPokemonId, setSelectedPokemonId] = useState<number | null>(
+    null,
+  );
 
   return (
     <div className="min-h-screen bg-white">
@@ -49,7 +54,10 @@ function App() {
               typeFilterLoading ? "opacity-60 transition-opacity" : "transition-opacity"
             }
           >
-            <PokemonGrid pokemons={visiblePokemons} />
+            <PokemonGrid
+              pokemons={visiblePokemons}
+              onSelect={setSelectedPokemonId}
+            />
           </div>
         )}
         {!loading && error === null && totalFiltered > 0 && (
@@ -61,6 +69,10 @@ function App() {
             onPageSizeChange={setPageSize}
           />
         )}
+        <PokemonModal
+          pokemonId={selectedPokemonId}
+          onClose={() => setSelectedPokemonId(null)}
+        />
       </main>
     </div>
   );
