@@ -10,6 +10,16 @@ import type {
 
 const POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
 
+export function extractIdFromResourceUrl(url: string): number | null {
+  const match = /\/pokemon\/(\d+)\/?$/.exec(url);
+  const idText = match?.[1];
+  if (idText === undefined) {
+    return null;
+  }
+  const id = Number(idText);
+  return Number.isNaN(id) ? null : id;
+}
+
 async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T> {
   const response = await fetch(url, { signal });
   if (!response.ok) {
@@ -27,13 +37,8 @@ export async function fetchFullIndex(
   );
   const results: PokemonIndexEntry[] = [];
   for (const entry of raw.results) {
-    const match = /\/pokemon\/(\d+)\/?$/.exec(entry.url);
-    const idText = match?.[1];
-    if (idText === undefined) {
-      continue;
-    }
-    const id = Number(idText);
-    if (Number.isNaN(id)) {
+    const id = extractIdFromResourceUrl(entry.url);
+    if (id === null) {
       continue;
     }
     results.push({ name: entry.name, id });
