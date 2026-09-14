@@ -5,11 +5,10 @@ import {
   fetchPokemonByType,
 } from "../lib/pokeapi.ts";
 import type {
+  PageSize,
   PokemonIndexEntry,
   PokemonTypeResponse,
 } from "../types/pokemon.ts";
-
-export type PageSize = 10 | 25 | 50 | 100;
 
 export interface UsePokemonIndexResult {
   visiblePokemons: PokemonIndexEntry[];

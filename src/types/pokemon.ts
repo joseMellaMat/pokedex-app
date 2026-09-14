@@ -82,3 +82,5 @@ export interface PokemonTypeEntry {
 export interface PokemonTypeResponse {
   pokemon: PokemonTypeEntry[];
 }
+
+export type PageSize = 10 | 25 | 50 | 100;
