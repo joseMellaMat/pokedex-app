@@ -9,6 +9,12 @@ import type {
 } from "../types/pokemon.ts";
 
 const POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
+const SPRITE_BASE_URL =
+  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
+
+export function getPokemonSpriteUrl(id: number): string {
+  return `${SPRITE_BASE_URL}/${id}.png`;
+}
 
 export function extractIdFromResourceUrl(url: string): number | null {
   const match = /\/pokemon\/(\d+)\/?$/.exec(url);
