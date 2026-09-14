@@ -103,12 +103,11 @@ or a responsibility changes for a different reason, split into:
 
 ### 3. `usePokemonDetail` chains three calls
 
-fetchPokemon(id)
-→ extract species.url
-→ fetchSpecies(url)
-→ extract evolution_chain.url
-→ fetchEvolutionChain(url)
-
+ fetchPokemon(id)
+     → extract species.name (slug que fetchSpecies espera)
+     → fetchSpecies(name)
+     → extract evolution_chain.url (URL absoluta, passthrough)
+     → fetchEvolutionChain(url)
 Returns `{ pokemon, species, evolution, loading, error }`. All three
 calls use the same `AbortController` so unmounting cancels everything.
 
