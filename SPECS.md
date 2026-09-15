@@ -81,3 +81,8 @@ via `localStorage`.
 - [ ] No network errors and no React warnings in the console during load, search, filter, and modal interactions.
 - [ ] Each card displays only sprite, name, and Pokédex number.
 - [ ] No network request is made per card when rendering a page of the list.
+
+## Status
+MVP complete as of commit <8d60542>. All acceptance criteria met.
+Pending polish (post-MVP): conditional empty state for type
+intersection, body scroll-lock, focus trap in modal.

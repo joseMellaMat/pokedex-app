@@ -21,3 +21,18 @@
 - `npm run build` and `npm run lint` are necessary but not sufficient.
   Always verify visually in the browser before committing, especially
   after changes to entry points like `main.tsx`.
+
+## MVP status
+- [x] Feature 1: Initial UI rendering
+- [x] Feature 2: Search, filter, pagination
+- [x] Feature 3: Modal shell
+- [x] Feature 4: Modal content
+- [x] Feature 5: Favorites context
+- [x] Feature 6: Favorite toggle button
+
+## Post-MVP polish
+- Conditional empty state for type intersection.
+- Body scroll-lock when modal is open.
+- Focus trap in modal.
+- Real retry in modal without closing.
+- Type-based card gradients with lazy loading (IntersectionObserver).
