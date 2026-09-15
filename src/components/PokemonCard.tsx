@@ -1,3 +1,4 @@
+import { formatName } from "../lib/format.ts";
 import { getPokemonSpriteUrl } from "../lib/pokeapi.ts";
 import type { PokemonIndexEntry } from "../types/pokemon.ts";
 
@@ -6,12 +7,8 @@ interface PokemonCardProps {
   onClick: () => void;
 }
 
-function capitalizeName(name: string): string {
-  return name.charAt(0).toUpperCase() + name.slice(1);
-}
-
 export function PokemonCard({ pokemon, onClick }: PokemonCardProps) {
-  const displayName = capitalizeName(pokemon.name);
+  const displayName = formatName(pokemon.name);
   const dexNumber = `#${String(pokemon.id).padStart(4, "0")}`;
 
   return (

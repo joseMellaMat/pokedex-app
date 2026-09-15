@@ -1,20 +1,225 @@
 import { useEffect } from "react";
 import type { MouseEvent } from "react";
 import { usePokemonDetail } from "../hooks/usePokemonDetail.ts";
+import { formatName } from "../lib/format.ts";
+import { extractIdFromResourceUrl } from "../lib/pokeapi.ts";
+import {
+  getContrastTextColor,
+  getTypeColor,
+} from "../lib/typeColors.ts";
+import type {
+  EvolutionChain,
+  EvolutionChainLink,
+  PokemonAbility,
+  PokemonSprites,
+  PokemonStat,
+  PokemonTypeSlot,
+} from "../types/pokemon.ts";
 import { ErrorMessage } from "./ui/ErrorMessage.tsx";
 import { Spinner } from "./ui/Spinner.tsx";
 
 interface PokemonModalProps {
   pokemonId: number | null;
   onClose: () => void;
+  onSelect: (id: number) => void;
 }
 
-function capitalizeName(name: string): string {
-  return name.charAt(0).toUpperCase() + name.slice(1);
+interface EvolutionEntry {
+  id: number;
+  name: string;
 }
 
-export function PokemonModal({ pokemonId, onClose }: PokemonModalProps) {
-  const { pokemon, loading, error } = usePokemonDetail(pokemonId);
+const STAT_LABELS: Record<string, string> = {
+  hp: "PS",
+  attack: "Ataque",
+  defense: "Defensa",
+  "special-attack": "At. Especial",
+  "special-defense": "Def. Especial",
+  speed: "Velocidad",
+};
+
+function flattenEvolutionChain(root: EvolutionChainLink): EvolutionEntry[] {
+  const entries: EvolutionEntry[] = [];
+  function visit(node: EvolutionChainLink): void {
+    const id = extractIdFromResourceUrl(node.species.url);
+    if (id !== null) {
+      entries.push({ id, name: node.species.name });
+    }
+    for (const next of node.evolves_to) {
+      visit(next);
+    }
+  }
+  visit(root);
+  return entries;
+}
+
+function TypeBadges({ types }: { types: PokemonTypeSlot[] }) {
+  const ordered = [...types].sort((a, b) => a.slot - b.slot);
+  return (
+    <section>
+      <h3 className="mb-2 font-bold">Tipos</h3>
+      <div className="flex gap-2">
+        {ordered.map((slot) => {
+          const backgroundColor = getTypeColor(slot.type.name);
+          const textColor =
+            getContrastTextColor(backgroundColor) === "white"
+              ? "text-white"
+              : "text-black";
+          return (
+            <span
+              key={slot.type.name}
+              style={{ backgroundColor }}
+              className={`rounded-lg border-2 border-black px-3 py-1 text-sm font-semibold ${textColor}`}
+            >
+              {formatName(slot.type.name)}
+            </span>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function SpriteGallery({ sprites }: { sprites: PokemonSprites }) {
+  const cells: { src: string | null; label: string }[] = [
+    { src: sprites.front_default, label: "Normal" },
+    { src: sprites.back_default, label: "Espalda" },
+    { src: sprites.front_shiny, label: "Shiny" },
+    { src: sprites.back_shiny, label: "Shiny espalda" },
+  ];
+  return (
+    <section>
+      <h3 className="mb-2 font-bold">Sprites</h3>
+      <div className="grid grid-cols-4 gap-2">
+        {cells.map((cell) => (
+          <div key={cell.label} className="flex flex-col items-center">
+            {cell.src !== null ? (
+              <img
+                src={cell.src}
+                alt={cell.label}
+                loading="lazy"
+                className="h-20 w-20"
+              />
+            ) : (
+              <div className="h-20 w-20 rounded bg-gray-200" />
+            )}
+            <span className="text-xs text-gray-600">{cell.label}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PhysicalInfo({ height, weight }: { height: number; weight: number }) {
+  return (
+    <section>
+      <h3 className="mb-2 font-bold">Altura y peso</h3>
+      <div className="flex gap-4">
+        <p>Altura: {(height / 10).toFixed(1)} m</p>
+        <p>Peso: {(weight / 10).toFixed(1)} kg</p>
+      </div>
+    </section>
+  );
+}
+
+function StatBars({ stats }: { stats: PokemonStat[] }) {
+  return (
+    <section>
+      <h3 className="mb-2 font-bold">Estadísticas</h3>
+      <div className="flex flex-col gap-1">
+        {stats.map((stat) => (
+          <div key={stat.stat.name} className="flex items-center gap-2">
+            <span className="w-28 text-sm">
+              {STAT_LABELS[stat.stat.name] ?? formatName(stat.stat.name)}
+            </span>
+            <span className="w-10 text-right font-semibold tabular-nums">
+              {stat.base_stat}
+            </span>
+            <div className="h-2 flex-1 rounded-full bg-gray-200">
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${Math.min(100, (stat.base_stat / 255) * 100)}%`,
+                  backgroundColor: "#6390F0",
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AbilityList({ abilities }: { abilities: PokemonAbility[] }) {
+  return (
+    <section>
+      <h3 className="mb-2 font-bold">Habilidades</h3>
+      <div className="flex flex-wrap gap-2">
+        {abilities.map((entry) => (
+          <span
+            key={entry.ability.name}
+            className="flex items-center gap-1 rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold"
+          >
+            {formatName(entry.ability.name)}
+            {entry.is_hidden && (
+              <span className="rounded bg-amber-200 px-1.5 py-0.5 text-xs">
+                Oculta
+              </span>
+            )}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function EvolutionList({
+  evolution,
+  currentId,
+  onSelect,
+}: {
+  evolution: EvolutionChain | null;
+  currentId: number;
+  onSelect: (id: number) => void;
+}) {
+  const entries =
+    evolution === null ? [] : flattenEvolutionChain(evolution.chain);
+  return (
+    <section>
+      <h3 className="mb-2 font-bold">Evoluciones</h3>
+      {entries.length <= 1 ? (
+        <p>Este Pokémon no evoluciona.</p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {entries.map((entry) =>
+            entry.id === currentId ? (
+              <span
+                key={`${entry.id}-${entry.name}`}
+                className="cursor-not-allowed rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold opacity-50"
+              >
+                {formatName(entry.name)}
+              </span>
+            ) : (
+              <button
+                key={`${entry.id}-${entry.name}`}
+                type="button"
+                onClick={() => onSelect(entry.id)}
+                className="rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              >
+                {formatName(entry.name)}
+              </button>
+            ),
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
+export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps) {
+  const { pokemon, evolution, loading, error } = usePokemonDetail(pokemonId);
 
   useEffect(() => {
     if (pokemonId === null) {
@@ -86,7 +291,7 @@ export function PokemonModal({ pokemonId, onClose }: PokemonModalProps) {
       >
         <div className="mb-4 flex items-start justify-between gap-4">
           <h2 id="pokemon-modal-title" className="text-2xl font-bold">
-            {dexNumber} {capitalizeName(pokemon.name)}
+            {dexNumber} {formatName(pokemon.name)}
           </h2>
           <button
             type="button"
@@ -109,7 +314,18 @@ export function PokemonModal({ pokemonId, onClose }: PokemonModalProps) {
             </svg>
           </button>
         </div>
-        <p>Contenido del modal próximamente</p>
+        <div className="space-y-6">
+          <TypeBadges types={pokemon.types} />
+          <SpriteGallery sprites={pokemon.sprites} />
+          <PhysicalInfo height={pokemon.height} weight={pokemon.weight} />
+          <StatBars stats={pokemon.stats} />
+          <AbilityList abilities={pokemon.abilities} />
+          <EvolutionList
+            evolution={evolution}
+            currentId={pokemon.id}
+            onSelect={onSelect}
+          />
+        </div>
       </div>
     </div>
   );

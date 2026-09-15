@@ -16,8 +16,10 @@ export function getPokemonSpriteUrl(id: number): string {
   return `${SPRITE_BASE_URL}/${id}.png`;
 }
 
+// Matches any resource URL ending in a numeric id, e.g.
+// /pokemon/{id}/, /pokemon-species/{id}/ or /evolution-chain/{id}/.
 export function extractIdFromResourceUrl(url: string): number | null {
-  const match = /\/pokemon\/(\d+)\/?$/.exec(url);
+  const match = /\/(\d+)\/?$/.exec(url);
   const idText = match?.[1];
   if (idText === undefined) {
     return null;

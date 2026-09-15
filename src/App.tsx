@@ -72,6 +72,7 @@ function App() {
         <PokemonModal
           pokemonId={selectedPokemonId}
           onClose={() => setSelectedPokemonId(null)}
+          onSelect={setSelectedPokemonId}
         />
       </main>
     </div>

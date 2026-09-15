@@ -1,3 +1,4 @@
+import { formatName } from "../lib/format.ts";
 import {
   POKEMON_TYPES,
   getContrastTextColor,
@@ -7,10 +8,6 @@ import {
 interface TypeFilterProps {
   selected: string[];
   onToggle: (type: string) => void;
-}
-
-function capitalize(typeName: string): string {
-  return typeName.charAt(0).toUpperCase() + typeName.slice(1);
 }
 
 export function TypeFilter({ selected, onToggle }: TypeFilterProps) {
@@ -34,7 +31,7 @@ export function TypeFilter({ selected, onToggle }: TypeFilterProps) {
               isActive ? textColor : "bg-gray-100 text-black"
             }`}
           >
-            {capitalize(type)}
+            {formatName(type)}
           </button>
         );
       })}
