@@ -34,6 +34,7 @@ to render type-based gradients on cards without a request per card.
 
 ## Folder structure
 
+```text
 src/
 ├── components/
 │ ├── ui/ # Dumb, reusable components (props only)
@@ -65,6 +66,7 @@ src/
 ├── App.tsx # Composition
 ├── main.tsx # Entry (wraps with FavoritesProvider)
 └── index.css # Tailwind
+```
 
 **Note:** `components/ui/` and `context/` are the **destination**, not the
 starting point. Early on, components can live flat in `components/`.
@@ -72,6 +74,7 @@ Move them to `ui/` once 3+ dumb components exist.
 
 ## Data flow
 
+```text
 App.tsx
 └── usePokemonIndex()
 ├── lib/pokeapi.ts → fetchFullIndex() (once on mount)
@@ -86,6 +89,7 @@ App.tsx
 
 └── useFavorites()
 └── localStorage + Context
+```
 
 **Rule:** components never call `fetch` directly. All network calls go
 through `lib/pokeapi.ts`. Components receive data and callbacks as props.
