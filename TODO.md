@@ -16,3 +16,8 @@
 - Evolution chip matching by id fails for alternate forms (Eevee Gmax
   doesn't match base Eevee id). Consider matching by species.name or
   accepting the degradation as documented.
+
+## Workflow lessons
+- `npm run build` and `npm run lint` are necessary but not sufficient.
+  Always verify visually in the browser before committing, especially
+  after changes to entry points like `main.tsx`.

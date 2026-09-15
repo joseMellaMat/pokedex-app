@@ -48,3 +48,8 @@ for folder structure.
 
 ## Lint
 - Flat config in `eslint.config.js`: `tseslint.configs.recommended` (not type-checked), `react-hooks` flat recommended, `react-refresh` vite. Only `**/*.{ts,tsx}` are linted.
+
+## Workflow lessons
+- `npm run build` and `npm run lint` are necessary but not sufficient.
+  Always verify visually in the browser before committing, especially
+  after changes to entry points like `main.tsx`.
