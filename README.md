@@ -1,4 +1,5 @@
 # Pokédex App
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Una Pokédex web responsiva construida con React, TypeScript y Vite que
 permite explorar Pokémon, buscar por nombre, filtrar por tipo, ver
@@ -106,4 +107,4 @@ El proyecto se despliega automáticamente en Vercel con cada push a main. Los Pu
 
 ## Licencia
 
-MIT
+Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](./LICENSE) para más detalles.
