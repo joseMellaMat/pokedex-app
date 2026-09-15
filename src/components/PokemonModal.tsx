@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import type { MouseEvent } from "react";
 import { usePokemonDetail } from "../hooks/usePokemonDetail.ts";
 import { formatName } from "../lib/format.ts";
+import { useFavorites } from "../context/FavoritesContext.tsx";
 import { extractIdFromResourceUrl } from "../lib/pokeapi.ts";
 import {
   getContrastTextColor,
@@ -220,6 +221,7 @@ function EvolutionList({
 
 export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps) {
   const { pokemon, evolution, loading, error } = usePokemonDetail(pokemonId);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     if (pokemonId === null) {
@@ -277,6 +279,8 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
   }
 
   const dexNumber = `#${String(pokemon.id).padStart(4, "0")}`;
+  const favorite = isFavorite(pokemon.id);
+  const favoriteLabel = favorite ? "Quitar de favoritos" : "Añadir a favoritos";
 
   return (
     <div
@@ -290,9 +294,29 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
         className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg border-2 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
       >
         <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 id="pokemon-modal-title" className="text-2xl font-bold">
+          <h2 id="pokemon-modal-title" className="flex-1 text-2xl font-bold">
             {dexNumber} {formatName(pokemon.name)}
           </h2>
+          <button
+            type="button"
+            onClick={() => toggleFavorite(pokemon.id)}
+            aria-pressed={favorite}
+            aria-label={favoriteLabel}
+            title={favoriteLabel}
+            className="shrink-0 rounded-lg border-2 border-black bg-gray-100 p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <svg
+              className="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill={favorite ? "#F7D02C" : "none"}
+              stroke="#000000"
+              strokeWidth="2"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M11.48 3.52c.16-.4.88-.4 1.04 0l2.12 5.11 5.52.44c.44.04.62.58.28.85l-4.2 3.6 1.28 5.38c.1.43-.36.76-.74.53L12 16.54l-4.78 2.89c-.38.23-.84-.1-.74-.53l1.28-5.38-4.2-3.6c-.34-.27-.16-.81.28-.85l5.52-.44 2.12-5.11z" />
+            </svg>
+          </button>
           <button
             type="button"
             onClick={onClose}
