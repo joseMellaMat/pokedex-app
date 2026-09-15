@@ -57,8 +57,10 @@ Abre http://localhost:5173 en tu navegador.
 
 ## Arquitectura
 
-El proyecto sigue una separación clara de responsabilidades. Las dependencias fluyen en una sola dirección: components → hooks → lib → API.
+El proyecto sigue una separación clara de responsabilidades. Las dependencias fluyen en una sola dirección: 
+`components` → `hooks` → `lib` → `API`.
 
+```text
 src/
 ├── components/       # Componentes de UI (reciben props, no fetchean)
 │   └── ui/           # Componentes reutilizables (Spinner, ErrorMessage)
@@ -66,6 +68,7 @@ src/
 ├── lib/              # Lógica pura (fetch API, colores, formateo)
 ├── context/          # Estado global (favoritos)
 └── types/            # Tipos e interfaces TypeScript
+```
 
 Más detalles sobre las decisiones de diseño en ARCHITECTURE.md.
 
@@ -85,16 +88,16 @@ Cada feature se planifica en modo Plan (sin escribir código), se revisa, y solo
 
 ## Capturas 
 
-Modal de detalle
-https://./docs/screenshots/modal.png
+### Modal de detalle
+<img src="./docs/screenshots/modal.png" alt="Vista Modal" width="320" />
 
-Filtro por tipo activo
-https://./docs/screenshots/filter.png
+### Filtro por tipo activo
+<img src="./docs/screenshots/filter.png" alt="Vista filtros" width="320" />
 
-Favoritos
-https://./docs/screenshots/favorites.png
+### Favoritos
+<img src="./docs/screenshots/favorites.png" alt="Vista favoritos" width="320" />
 
-Vista mobile
+### Vista mobile
 <img src="./docs/screenshots/mobile.png" alt="Vista mobile" width="320" />
 
 ## Deploy
