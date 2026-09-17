@@ -72,6 +72,17 @@ function applyTypeFilter(
   );
 }
 
+function applyIdFilter(
+  entries: PokemonIndexEntry[],
+  filterIds: number[] | null,
+): PokemonIndexEntry[] {
+  if (filterIds === null) {
+    return entries;
+  }
+  const idSet = new Set(filterIds);
+  return entries.filter((entry) => idSet.has(entry.id));
+}
+
 function paginate(
   entries: PokemonIndexEntry[],
   page: number,
@@ -88,7 +99,9 @@ function isAbortError(error: unknown): boolean {
   return error instanceof DOMException && error.name === "AbortError";
 }
 
-export function usePokemonIndex(): UsePokemonIndexResult {
+export function usePokemonIndex(
+  filterIds: number[] | null = null,
+): UsePokemonIndexResult {
   const [index, setIndex] = useState<PokemonIndexEntry[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -206,11 +219,18 @@ export function usePokemonIndex(): UsePokemonIndexResult {
     () => applyTypeFilter(textFiltered, typeIdSets),
     [textFiltered, typeIdSets],
   );
-  const totalFiltered = filtered.length;
+  const idFiltered = useMemo(
+    () => applyIdFilter(filtered, filterIds),
+    [filtered, filterIds],
+  );
+  const totalFiltered = idFiltered.length;
   const totalPages = Math.max(1, Math.ceil(totalFiltered / pageSize));
+  // Clamp: totalPages can shrink below page when favorites are removed
+  // elsewhere (e.g. unfavoriting from the modal), leaving page out of range.
+  const currentPage = Math.min(page, totalPages);
   const visiblePokemons = useMemo(
-    () => paginate(filtered, page, pageSize),
-    [filtered, page, pageSize],
+    () => paginate(idFiltered, currentPage, pageSize),
+    [idFiltered, currentPage, pageSize],
   );
 
   return {
@@ -223,7 +243,7 @@ export function usePokemonIndex(): UsePokemonIndexResult {
     setSearchQuery,
     selectedTypes,
     toggleType,
-    page,
+    page: currentPage,
     setPage,
     pageSize,
     setPageSize,

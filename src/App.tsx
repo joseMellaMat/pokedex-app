@@ -6,9 +6,12 @@ import { SearchBar } from "./components/SearchBar.tsx";
 import { TypeFilter } from "./components/TypeFilter.tsx";
 import { ErrorMessage } from "./components/ui/ErrorMessage.tsx";
 import { Spinner } from "./components/ui/Spinner.tsx";
+import { useFavorites } from "./context/FavoritesContext.tsx";
 import { usePokemonIndex } from "./hooks/usePokemonIndex.ts";
 
 function App() {
+  const { favorites } = useFavorites();
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState<boolean>(false);
   const {
     visiblePokemons,
     loading,
@@ -25,10 +28,15 @@ function App() {
     totalFiltered,
     totalPages,
     retry,
-  } = usePokemonIndex();
+  } = usePokemonIndex(showOnlyFavorites ? favorites : null);
   const [selectedPokemonId, setSelectedPokemonId] = useState<number | null>(
     null,
   );
+
+  function toggleShowOnlyFavorites(): void {
+    setShowOnlyFavorites((value) => !value);
+    setPage(1);
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -38,15 +46,22 @@ function App() {
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
         </div>
         <div className="mb-8">
-          <TypeFilter selected={selectedTypes} onToggle={toggleType} />
+          <TypeFilter
+            selected={selectedTypes}
+            onToggle={toggleType}
+            showOnlyFavorites={showOnlyFavorites}
+            onToggleFavorites={toggleShowOnlyFavorites}
+          />
         </div>
         {loading ? (
           <Spinner />
         ) : error !== null ? (
           <ErrorMessage message={error} onRetry={retry} />
-        ) : totalFiltered === 0 ? ( 
+        ) : totalFiltered === 0 ? (
           <p className="py-16 text-center font-semibold">
-            {selectedTypes.length > 0 ?(
+            {showOnlyFavorites && favorites.length === 0 ?(
+                "Aún no tienes favoritos. Marca algunos desde el detalle de un Pokémon."
+            ): selectedTypes.length > 0 ?(
                 "Ningún Pokémon combina todos los tipos seleccionados. Prueba quitando alguno"
             ):(
                 "No se encontraron Pokémon"
