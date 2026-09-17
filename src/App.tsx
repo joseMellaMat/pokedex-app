@@ -44,9 +44,13 @@ function App() {
           <Spinner />
         ) : error !== null ? (
           <ErrorMessage message={error} onRetry={retry} />
-        ) : totalFiltered === 0 ? (
+        ) : totalFiltered === 0 ? ( 
           <p className="py-16 text-center font-semibold">
-            No se encontraron Pokémon
+            {selectedTypes.length > 0 ?(
+                "Ningún Pokémon combina todos los tipos seleccionados. Prueba quitando alguno"
+            ):(
+                "No se encontraron Pokémon"
+            )}
           </p>
         ) : (
           <div
