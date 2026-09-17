@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import type { MouseEvent } from "react";
 import { usePokemonDetail } from "../hooks/usePokemonDetail.ts";
+import { useBodyScrollLock } from "../hooks/useBodyScrollLock.ts";
 import { formatName } from "../lib/format.ts";
 import { useFavorites } from "../context/FavoritesContext.tsx";
 import { extractIdFromResourceUrl } from "../lib/pokeapi.ts";
@@ -237,6 +238,8 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [pokemonId, onClose]);
+
+  useBodyScrollLock(pokemonId !== null);
 
   if (pokemonId === null) {
     return null;
