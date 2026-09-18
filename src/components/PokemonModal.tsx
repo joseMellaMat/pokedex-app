@@ -5,7 +5,7 @@ import { usePokemonDetail } from "../hooks/usePokemonDetail.ts";
 import { useBodyScrollLock } from "../hooks/useBodyScrollLock.ts";
 import { formatName } from "../lib/format.ts";
 import { useFavorites } from "../context/FavoritesContext.tsx";
-import { extractIdFromResourceUrl } from "../lib/pokeapi.ts";
+import { extractIdFromResourceUrl, getAlternateForms } from "../lib/pokeapi.ts";
 import {
   getContrastTextColor,
   getTypeColor,
@@ -14,6 +14,7 @@ import type {
   EvolutionChain,
   EvolutionChainLink,
   PokemonAbility,
+  PokemonSpecies,
   PokemonSprites,
   PokemonStat,
   PokemonTypeSlot,
@@ -178,6 +179,37 @@ function AbilityList({ abilities }: { abilities: PokemonAbility[] }) {
   );
 }
 
+function NavigationChip({
+  id,
+  name,
+  currentId,
+  onSelect,
+}: {
+  id: number;
+  name: string;
+  currentId: number;
+  onSelect: (id: number) => void;
+}) {
+  if (id === currentId) {
+    return (
+      <span
+        className="cursor-not-allowed rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold opacity-50"
+      >
+        {formatName(name)}
+      </span>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(id)}
+      className="rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+    >
+      {formatName(name)}
+    </button>
+  );
+}
+
 function EvolutionList({
   evolution,
   currentId,
@@ -196,27 +228,54 @@ function EvolutionList({
         <p>Este Pokémon no evoluciona.</p>
       ) : (
         <div className="flex flex-wrap gap-2">
-          {entries.map((entry) =>
-            entry.id === currentId ? (
-              <span
-                key={`${entry.id}-${entry.name}`}
-                className="cursor-not-allowed rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold opacity-50"
-              >
-                {formatName(entry.name)}
-              </span>
-            ) : (
-              <button
-                key={`${entry.id}-${entry.name}`}
-                type="button"
-                onClick={() => onSelect(entry.id)}
-                className="rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-              >
-                {formatName(entry.name)}
-              </button>
-            ),
-          )}
+          {entries.map((entry) => (
+            <NavigationChip
+              key={`${entry.id}-${entry.name}`}
+              id={entry.id}
+              name={entry.name}
+              currentId={currentId}
+              onSelect={onSelect}
+            />
+          ))}
         </div>
       )}
+    </section>
+  );
+}
+
+function AlternateForms({
+  species,
+  currentId,
+  onSelect,
+}: {
+  species: PokemonSpecies;
+  currentId: number;
+  onSelect: (id: number) => void;
+}) {
+  const forms = getAlternateForms(species);
+  if (forms.length === 0) {
+    return null;
+  }
+  return (
+    <section>
+      <h3 className="mb-2 font-bold">Formas alternativas</h3>
+      <div className="flex flex-wrap gap-2">
+        {forms.flatMap((form) => {
+          const id = extractIdFromResourceUrl(form.url);
+          if (id === null) {
+            return [];
+          }
+          return [
+            <NavigationChip
+              key={`${id}-${form.name}`}
+              id={id}
+              name={form.name}
+              currentId={currentId}
+              onSelect={onSelect}
+            />,
+          ];
+        })}
+      </div>
     </section>
   );
 }
@@ -292,7 +351,7 @@ function ModalHeader({ title, onClose, closeButtonRef, favorite }: ModalHeaderPr
 }
 
 export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps) {
-  const { pokemon, evolution, loading, error } = usePokemonDetail(pokemonId);
+  const { pokemon, species, evolution, loading, error } = usePokemonDetail(pokemonId);
   const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
@@ -405,6 +464,13 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
             currentId={pokemon.id}
             onSelect={onSelect}
           />
+          {species !== null && (
+            <AlternateForms
+              species={species}
+              currentId={pokemon.id}
+              onSelect={onSelect}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -58,12 +58,18 @@ export interface PokemonDetail {
   abilities: PokemonAbility[];
 }
 
+export interface PokemonSpeciesVariety {
+  is_default: boolean;
+  pokemon: NamedApiResource;
+}
+
 export interface PokemonSpecies {
   id: number;
   name: string;
   evolution_chain: {
     url: string;
   };
+  varieties: PokemonSpeciesVariety[];
 }
 
 export interface EvolutionChainLink {
