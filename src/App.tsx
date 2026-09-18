@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pagination } from "./components/Pagination.tsx";
 import { PokemonGrid } from "./components/PokemonGrid.tsx";
 import { PokemonModal } from "./components/PokemonModal.tsx";
@@ -8,6 +8,7 @@ import { ErrorMessage } from "./components/ui/ErrorMessage.tsx";
 import { Spinner } from "./components/ui/Spinner.tsx";
 import { useFavorites } from "./context/FavoritesContext.tsx";
 import { usePokemonIndex } from "./hooks/usePokemonIndex.ts";
+import { usePokemonTypes } from "./hooks/usePokemonTypes.ts";
 
 function App() {
   const { favorites } = useFavorites();
@@ -32,6 +33,11 @@ function App() {
   const [selectedPokemonId, setSelectedPokemonId] = useState<number | null>(
     null,
   );
+  const visibleIds = useMemo(
+    () => visiblePokemons.map((pokemon) => pokemon.id),
+    [visiblePokemons],
+  );
+  const { typesById } = usePokemonTypes(visibleIds);
 
   function toggleShowOnlyFavorites(): void {
     setShowOnlyFavorites((value) => !value);
@@ -76,6 +82,7 @@ function App() {
             <PokemonGrid
               pokemons={visiblePokemons}
               onSelect={setSelectedPokemonId}
+              typesById={typesById}
             />
           </div>
         )}
