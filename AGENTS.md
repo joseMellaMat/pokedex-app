@@ -9,7 +9,9 @@ for folder structure.
 - `npm run build` — typecheck (`tsc -b`) + `vite build`; always use to verify
 - `npm run lint` — ESLint (`dist/` is globally ignored)
 - `npm run preview` — preview production build
-- No test runner, CI workflow, or formatter is configured. Do not add one unasked.
+- `npm run test` — Vitest in watch mode
+- `npm run test:run` — Vitest one-shot (for CI)
+- No CI workflow or formatter is configured. Do not add one unasked.
 
 ## Code conventions
 - Strict TypeScript. Never use `any`. If a type is unknown, use `unknown` and narrow.
