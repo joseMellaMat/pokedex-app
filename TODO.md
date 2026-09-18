@@ -36,3 +36,8 @@
 - Focus trap in modal.
 - Real retry in modal without closing.
 - Type-based card gradients with lazy loading (IntersectionObserver).
+
+## Card image fallbacks (post-v2-better-card-images)
+- Add a "?" symbol or Pokéball icon to the gray placeholder box
+  (step 3 of the fallback) so it reads as "image not available"
+  instead of "still loading".
