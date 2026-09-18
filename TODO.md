@@ -41,3 +41,10 @@
 - Add a "?" symbol or Pokéball icon to the gray placeholder box
   (step 3 of the fallback) so it reads as "image not available"
   instead of "still loading".
+
+## Focus trap (post-v2-focus-trap)
+- Edge case: when unfavoriting the currently-open Pokémon while
+  "Solo favoritos" is active, the card unmounts and the focus
+  restoration falls back to body. Acceptable for MVP. Consider
+  restoring to the first focusable element of the page, or track
+  a fallback selector (aria-label) as the restore anchor.
