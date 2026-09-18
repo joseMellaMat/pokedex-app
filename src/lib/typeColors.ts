@@ -49,16 +49,69 @@ export function getTypeColor(type: string): string {
 }
 
 // WCAG relative luminance decides whether black or white text is readable.
-export function getContrastTextColor(hexColor: string): "black" | "white" {
+function relativeLuminance(hexColor: string): number | null {
   const match = /^#([0-9a-f]{6})$/i.exec(hexColor.trim());
   if (match?.[1] === undefined) {
-    return "black";
+    return null;
   }
   const hex = match[1];
   const channels = [0, 2, 4].map((offset) => {
     const value = Number.parseInt(hex.slice(offset, offset + 2), 16) / 255;
     return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
   });
-  const luminance = 0.2126 * (channels[0] ?? 0) + 0.7152 * (channels[1] ?? 0) + 0.0722 * (channels[2] ?? 0);
+  return (
+    0.2126 * (channels[0] ?? 0) +
+    0.7152 * (channels[1] ?? 0) +
+    0.0722 * (channels[2] ?? 0)
+  );
+}
+
+export function getContrastTextColor(hexColor: string): "black" | "white" {
+  const luminance = relativeLuminance(hexColor);
+  if (luminance === null) {
+    return "black";
+  }
   return luminance > 0.179 ? "black" : "white";
+}
+
+export function getDarkestTypeColor(types: string[]): string {
+  let darkest = FALLBACK_TYPE_COLOR;
+  let lowest = Number.POSITIVE_INFINITY;
+  for (const type of types) {
+    const color = getTypeColor(type);
+    const luminance = relativeLuminance(color) ?? Number.POSITIVE_INFINITY;
+    if (luminance < lowest) {
+      lowest = luminance;
+      darkest = color;
+    }
+  }
+  return darkest;
+}
+
+function hexToRgba(hexColor: string, alpha: number): string {
+  const match = /^#([0-9a-f]{6})$/i.exec(hexColor.trim());
+  if (match?.[1] === undefined) {
+    return hexColor;
+  }
+  const hex = match[1];
+  const red = Number.parseInt(hex.slice(0, 2), 16);
+  const green = Number.parseInt(hex.slice(2, 4), 16);
+  const blue = Number.parseInt(hex.slice(4, 6), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+export function getTypeGradient(types: string[]): string | null {
+  if (types.length === 0) {
+    return null;
+  }
+  const [first, second] = types.slice(0, 2);
+  if (first === undefined) {
+    return null;
+  }
+  const firstColor = hexToRgba(getTypeColor(first), 0.35);
+  if (second === undefined) {
+    return firstColor;
+  }
+  const secondColor = hexToRgba(getTypeColor(second), 0.35);
+  return `linear-gradient(to right, ${firstColor} 0%, ${firstColor} 50%, ${secondColor} 50%, ${secondColor} 100%)`;
 }
