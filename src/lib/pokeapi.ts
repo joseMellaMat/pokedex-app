@@ -1,5 +1,6 @@
 import type {
   EvolutionChain,
+  NamedApiResource,
   PokemonDetail,
   PokemonIndexEntry,
   PokemonIndexResponse,
@@ -84,6 +85,15 @@ export async function fetchEvolutionChain(
   signal?: AbortSignal,
 ): Promise<EvolutionChain> {
   return fetchJson<EvolutionChain>(url, signal);
+}
+
+export function getAlternateForms(species: PokemonSpecies): NamedApiResource[] {
+  const varieties = Array.isArray(species.varieties)
+    ? species.varieties
+    : [];
+  return varieties
+    .filter((variety) => variety.is_default === false)
+    .map((variety) => variety.pokemon);
 }
 
 export async function fetchPokemonByType(
