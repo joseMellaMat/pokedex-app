@@ -1,5 +1,6 @@
-import { useEffect } from "react";
-import type { MouseEvent } from "react";
+import { useEffect, useRef } from "react";
+import type { MouseEvent, RefObject } from "react";
+import { useModalFocus } from "../hooks/useModalFocus.ts";
 import { usePokemonDetail } from "../hooks/usePokemonDetail.ts";
 import { useBodyScrollLock } from "../hooks/useBodyScrollLock.ts";
 import { formatName } from "../lib/format.ts";
@@ -220,6 +221,76 @@ function EvolutionList({
   );
 }
 
+interface ModalHeaderFavorite {
+  isFavorite: boolean;
+  onToggle: () => void;
+}
+
+interface ModalHeaderProps {
+  title: string;
+  onClose: () => void;
+  closeButtonRef: RefObject<HTMLButtonElement | null>;
+  favorite?: ModalHeaderFavorite;
+}
+
+function ModalHeader({ title, onClose, closeButtonRef, favorite }: ModalHeaderProps) {
+  const favoriteLabel = favorite?.isFavorite
+    ? "Quitar de favoritos"
+    : "Añadir a favoritos";
+  return (
+    <div className="mb-4 flex items-start justify-between gap-4">
+      <h2 id="pokemon-modal-title" className="flex-1 text-2xl font-bold">
+        {title}
+      </h2>
+      {favorite !== undefined && (
+        <button
+          key="favorite"
+          type="button"
+          onClick={favorite.onToggle}
+          aria-pressed={favorite.isFavorite}
+          aria-label={favoriteLabel}
+          title={favoriteLabel}
+          className="shrink-0 rounded-lg border-2 border-black bg-gray-100 p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+        >
+          <svg
+            className="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill={favorite.isFavorite ? "#F7D02C" : "none"}
+            stroke="#000000"
+            strokeWidth="2"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M11.48 3.52c.16-.4.88-.4 1.04 0l2.12 5.11 5.52.44c.44.04.62.58.28.85l-4.2 3.6 1.28 5.38c.1.43-.36.76-.74.53L12 16.54l-4.78 2.89c-.38.23-.84-.1-.74-.53l1.28-5.38-4.2-3.6c-.34-.27-.16-.81.28-.85l5.52-.44 2.12-5.11z" />
+          </svg>
+        </button>
+      )}
+      <button
+        key="close"
+        type="button"
+        ref={closeButtonRef}
+        onClick={onClose}
+        aria-label="Cerrar"
+        className="shrink-0 rounded-lg border-2 border-black bg-gray-100 p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+      >
+        <svg
+          className="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
 export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps) {
   const { pokemon, evolution, loading, error } = usePokemonDetail(pokemonId);
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -241,6 +312,10 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
 
   useBodyScrollLock(pokemonId !== null);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  useModalFocus(containerRef, pokemonId !== null, closeButtonRef);
+
   if (pokemonId === null) {
     return null;
   }
@@ -254,10 +329,17 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
   if (loading) {
     return (
       <div
+        ref={containerRef}
+        tabIndex={-1}
         className="fixed inset-0 flex items-center justify-center bg-black/50 p-4"
         onMouseDown={handleOverlayMouseDown}
       >
         <div className="w-full max-w-2xl rounded-lg border-2 border-black bg-white p-6">
+          <ModalHeader
+            title="Cargando..."
+            onClose={onClose}
+            closeButtonRef={closeButtonRef}
+          />
           <Spinner />
         </div>
       </div>
@@ -267,10 +349,17 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
   if (error !== null || pokemon === null) {
     return (
       <div
+        ref={containerRef}
+        tabIndex={-1}
         className="fixed inset-0 flex items-center justify-center bg-black/50 p-4"
         onMouseDown={handleOverlayMouseDown}
       >
         <div className="w-full max-w-2xl rounded-lg border-2 border-black bg-white p-6">
+          <ModalHeader
+            title="Error"
+            onClose={onClose}
+            closeButtonRef={closeButtonRef}
+          />
           <ErrorMessage
             message="Error al cargar. Cierra e inténtalo de nuevo."
             onRetry={onClose}
@@ -282,11 +371,11 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
   }
 
   const dexNumber = `#${String(pokemon.id).padStart(4, "0")}`;
-  const favorite = isFavorite(pokemon.id);
-  const favoriteLabel = favorite ? "Quitar de favoritos" : "Añadir a favoritos";
 
   return (
     <div
+      ref={containerRef}
+      tabIndex={-1}
       className="fixed inset-0 flex items-center justify-center bg-black/50 p-4"
       onMouseDown={handleOverlayMouseDown}
     >
@@ -296,51 +385,15 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
         aria-labelledby="pokemon-modal-title"
         className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg border-2 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
       >
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 id="pokemon-modal-title" className="flex-1 text-2xl font-bold">
-            {dexNumber} {formatName(pokemon.name)}
-          </h2>
-          <button
-            type="button"
-            onClick={() => toggleFavorite(pokemon.id)}
-            aria-pressed={favorite}
-            aria-label={favoriteLabel}
-            title={favoriteLabel}
-            className="shrink-0 rounded-lg border-2 border-black bg-gray-100 p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-          >
-            <svg
-              className="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill={favorite ? "#F7D02C" : "none"}
-              stroke="#000000"
-              strokeWidth="2"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M11.48 3.52c.16-.4.88-.4 1.04 0l2.12 5.11 5.52.44c.44.04.62.58.28.85l-4.2 3.6 1.28 5.38c.1.43-.36.76-.74.53L12 16.54l-4.78 2.89c-.38.23-.84-.1-.74-.53l1.28-5.38-4.2-3.6c-.34-.27-.16-.81.28-.85l5.52-.44 2.12-5.11z" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar"
-            className="shrink-0 rounded-lg border-2 border-black bg-gray-100 p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-          >
-            <svg
-              className="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+        <ModalHeader
+          title={`${dexNumber} ${formatName(pokemon.name)}`}
+          onClose={onClose}
+          closeButtonRef={closeButtonRef}
+          favorite={{
+            isFavorite: isFavorite(pokemon.id),
+            onToggle: () => toggleFavorite(pokemon.id),
+          }}
+        />
         <div className="space-y-6">
           <TypeBadges types={pokemon.types} />
           <SpriteGallery sprites={pokemon.sprites} />

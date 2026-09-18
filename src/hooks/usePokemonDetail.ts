@@ -33,7 +33,8 @@ export function usePokemonDetail(id: number | null): UsePokemonDetailResult {
   const [pokemon, setPokemon] = useState<PokemonDetail | null>(null);
   const [species, setSpecies] = useState<PokemonSpecies | null>(null);
   const [evolution, setEvolution] = useState<EvolutionChain | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  // Starts true so the first paint on open is the spinner, never the error branch.
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
