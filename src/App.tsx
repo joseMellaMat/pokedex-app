@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pagination } from "./components/Pagination.tsx";
 import { PokemonGrid } from "./components/PokemonGrid.tsx";
 import { PokemonModal } from "./components/PokemonModal.tsx";
@@ -38,6 +38,11 @@ function App() {
     [visiblePokemons],
   );
   const { typesById } = usePokemonTypes(visibleIds);
+
+  // Scroll to top when the page changes so the user sees the new results from the start.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
 
   function toggleShowOnlyFavorites(): void {
     setShowOnlyFavorites((value) => !value);
