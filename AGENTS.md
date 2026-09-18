@@ -11,7 +11,8 @@ for folder structure.
 - `npm run preview` — preview production build
 - `npm run test` — Vitest in watch mode
 - `npm run test:run` — Vitest one-shot (for CI)
-- No CI workflow or formatter is configured. Do not add one unasked.
+- CI runs on push to `main` and PRs toward `main` (`.github/workflows/ci.yml`): `npm ci` → `npm run test:run` → `npm run build` → `npm run lint`.
+- No formatter is configured. Do not add one unasked.
 
 ## Code conventions
 - Strict TypeScript. Never use `any`. If a type is unknown, use `unknown` and narrow.
