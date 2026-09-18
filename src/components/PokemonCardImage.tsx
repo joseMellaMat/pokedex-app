@@ -17,7 +17,16 @@ export function PokemonCardImage({ id, alt }: PokemonCardImageProps) {
   }
 
   if (step >= 2) {
-    return <div className="h-24 w-24 rounded bg-gray-200" />;
+    return (
+      <div className="flex h-24 w-24 items-center justify-center rounded bg-gray-200">
+        <span
+          aria-hidden="true"
+          className="text-5xl leading-none font-bold text-black select-none"
+        >
+          ?
+        </span>
+      </div>
+    );
   }
 
   if (step === 1) {
