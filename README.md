@@ -1,7 +1,7 @@
 # Pokédex App
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Una Pokédex web responsiva construida con React, TypeScript y Vite que permite explorar Pokémon, buscar por nombre, filtrar por tipo, ver detalles completos (stats, habilidades, evoluciones) y guardar favoritos sin necesidad de crear una cuenta.
+Una Pokédex web responsiva construida con React, TypeScript y Vite que permite explorar Pokémon, buscar por nombre, filtrar por tipo, ver detalles completos (stats, habilidades, evoluciones) y guardar favoritos sin necesidad de crear una cuenta. Incluye dark mode y está cubierta por 67 tests.
 
 **[Ver demo en vivo](https://pokedex-app-delta-blush.vercel.app/)**
 
@@ -40,11 +40,15 @@ Una Pokédex web responsiva construida con React, TypeScript y Vite que permite 
 
 ### Diseño visual
 
+### Diseño visual
+
+- **Dark mode** con persistencia y script FOUC-free
 - Gradientes por tipo en las tarjetas (mitad-y-mitad para Pokémon
   duales, como Charizard Fire/Flying)
 - Imágenes con fallback en cascada: official artwork → silueta negra →
-  placeholder gris
-- Estilo neo-brutalist coherente (bordes negros, sombras duras)
+  placeholder con "?"
+- Estilo neo-brutalist coherente en ambos modos (bordes y sombras
+  invertidos en dark)
 - Favicon de Pokébola
 - Responsive (mobile-first)
 
@@ -70,10 +74,12 @@ Una Pokédex web responsiva construida con React, TypeScript y Vite que permite 
 
 - **Frontend**: React 19 + TypeScript
 - **Build**: Vite
-- **Estilos**: Tailwind CSS v4 (CSS-first)
+- **Estilos**: Tailwind CSS v4 (CSS-first, con variante `dark` por clase)
 - **Datos**: [PokéAPI](https://pokeapi.co/) (REST, sin autenticación)
-- **Estado**: React hooks (`useState`, `useEffect`) + Context API
-- **Persistencia**: `localStorage` para favoritos
+- **Estado**: React hooks + Context API (favoritos y tema)
+- **Persistencia**: `localStorage` (favoritos y tema)
+- **Testing**: Vitest + React Testing Library (67 tests)
+- **CI**: GitHub Actions (tests + build + lint en cada PR)
 - **Deploy**: Vercel
 
 ## Cómo empezar
@@ -92,29 +98,22 @@ Abre http://localhost:5173 en tu navegador.
 | --- | --- |
 | `npm run dev` | Servidor de desarrollo con HMR |
 | `npm run build` | Typecheck (`tsc -b`) + build de producción |
+| `npm run test` | Vitest en modo waatch |
+| `npm run test:run` | Vitest one-shot (para CI) |
 | `npm run lint` | Ejecuta ESLint |
 | `npm run preview` | Previsualiza el build de producción |
 
 ## Arquitectura
 
-El proyecto sigue una separación clara de responsabilidades. Las dependencias fluyen en una sola dirección: 
-`components` → `hooks` → `lib` → `API`.
+El proyecto sigue una separación clara de responsabilidades. Las dependencias fluyen en una sola dirección: `components` → `hooks` → `lib` → `API`.
 
 ```text
 src/
 ├── components/       # Componentes de UI (reciben props, no fetchean)
-│   └── ui/           # Componentes reutilizables (Spinner, ErrorMessage)
+│   └── ui/           # Reutilizables (Spinner, ErrorMessage)
 ├── hooks/            # Lógica de estado y datos
-│   ├── usePokemonIndex.ts     # Índice, búsqueda, filtro, paginación
-│   ├── usePokemonDetail.ts    # Detalle encadenado (pokemon → species → evolution)
-│   ├── usePokemonTypes.ts     # Tipos por id (para los gradientes de tarjetas)
-│   ├── useModalFocus.ts       # Focus trap del modal
-│   └── useBodyScrollLock.ts   # Scroll lock del body
-├── lib/              # Lógica pura
-│   ├── pokeapi.ts             # Fetch layer (única fuente de URLs)
-│   ├── typeColors.ts          # Colores, contraste WCAG y gradientes
-│   └── format.ts              # Formateo de nombres
-├── context/          # Estado global (favoritos)
+├── lib/              # Lógica pura (fetch, colores, formato)
+├── context/          # Estado global (favoritos, tema)
 └── types/            # Tipos e interfaces TypeScript
 ```
 
@@ -129,6 +128,28 @@ La app carga el índice completo de Pokémon una vez al montar (GET /pokemon?lim
 
 Este diseño elimina el problema N+1 de hacer un fetch por tarjeta y permite búsqueda instantánea sin debounce.
 
+## Testing
+
+67 tests sobre las capas críticas:
+
+- **lib/ (33 tests)**: funciones puras como formatName, getTypeColor, getContrastTextColor, getTypeGradient, extractIdFromResourceUrl, getAlternateForms.
+- **context/ (18 tests)**: useFavorites y useTheme con Provider wrapper y aislamiento de localStorage.
+- **components/ (5 tests)**: cascada de fallback de PokemonCardImage.
+- **hooks/ (11 tests)**: usePokemonIndex con mock parcial de la capa API y Deferred para verificar abort en unmount.
+
+Ejecutar `npm run test:run` para correrlos todos.
+
+## CI
+
+El workflow `.github/workflows/ci.yml` corre en cada push a `main` y en cada Pull Request:
+
+1. `npm ci` (instalación limpia desde el lockfile)
+2. `npm run test:run`
+3. `npm run build`
+4. `npm run lint`
+
+El merge a `main` está **bloqueado** por branch protection si el CI falla. Vercel gnera Preview Deployments automáticos para cada PR.
+
 ## Proceso de desarrollo
 
 Este proyecto fue construido usando OpenCode (un agente de IA para desarrollo) con un flujo estructurado por archivos de contexto que gobiernan el comportamiento del agente:
@@ -137,11 +158,17 @@ Este proyecto fue construido usando OpenCode (un agente de IA para desarrollo) c
 - **SPECS.md** — Alcance funcional, endpoints de API y criterios de aceptación
 - **ARCHITECTURE.md** — Decisiones técnicas, estructura de carpetas y estrategia de datos
 
-Cada feature se planifica en modo Plan (sin escribir código), se revisa, y solo entonces pasa a modo Build. Todas las verificaciones pasan por npm run build y npm run lint antes de commitear, siguiendo Conventional Commits.
+Cada feature se planifica en modo Plan (sin escribir código), se revisa, y solo entonces pasa a modo Build. Todas las verificaciones pasan por `npm run test:run`,`npm run build` y `npm run lint` antes de commitear, siguiendo Conventional Commits.
 
-El desarrollo posterior al MVP se organizó con Feature Branch Workflow: cada feature en su propia rama, con Preview Deployment en Vercel antes del merge a main.
+El desarrollo posterior al MVP se organizó con Feature Branch Workflow: cada feature en su propia rama, con Preview Deployment en Vercel y CI de GitHub Actions antes del merge a `main`.
 
 ## Capturas 
+
+### Vista principal (light mode)
+<img src="./docs/screenshots/grid.png" alt="Vista Modal" width="320" />
+
+### Vista principal (dark mode)
+<img src="./docs/screenshots/dark-mode.png" alt="Vista Modal" width="320" />
 
 ### Modal de detalle
 <img src="./docs/screenshots/modal.png" alt="Vista Modal" width="320" />
@@ -157,7 +184,7 @@ El desarrollo posterior al MVP se organizó con Feature Branch Workflow: cada fe
 
 ## Deploy
 
-El proyecto se despliega automáticamente en Vercel con cada push a main. Los Pull Requests generan Preview Deployments con URLs únicas para verificar cambios antes de mergear.
+El proyecto se despliega automáticamente en Vercel con cada push a `main`. Los Pull Requests generan **Preview Deployments** con URLs únicas para verificar cambios antes de mergear.
 
 ## Licencia
 
