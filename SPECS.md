@@ -83,6 +83,17 @@ via `localStorage`.
 - [ ] No network request is made per card when rendering a page of the list.
 
 ## Status
-MVP complete as of commit <8d60542>. All acceptance criteria met.
-Pending polish (post-MVP): conditional empty state for type
-intersection, body scroll-lock, focus trap in modal.
+**Complete.** Todas las funcionalidades del MVP y las mejoras de v2 están implementadas, testeadas y en producción:
+
+- Búsqueda, filtro por tipo (intersección), filtro "solo favoritos", paginación configurable.
+- Modal de detalle con sprites, stats, habilidades, evoluciones y formas alternativas.
+- Sistema de favoritos con persistencia.
+- Dark mode con persistencia.
+- Accesibilidad completa de teclado (focus trap, restauración).
+- 67 tests automatizados.
+- CI con GitHub Actions (tests + build + lint).
+
+**Deuda conocida (post-v2):**
+- El retry del modal cierra en lugar de refetchear sin cerrar.
+- Focus trap: si el Pokémon abierto se desmarca como favorito con "solo favoritos" activo, la restauración de foco cae a body.
+- Los chips de evolución de formas alternativas comparan por id; las formas sin id matcheable no se marcan como "actual".
