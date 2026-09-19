@@ -100,7 +100,7 @@ function hexToRgba(hexColor: string, alpha: number): string {
   return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 }
 
-export function getTypeGradient(types: string[]): string | null {
+export function getTypeGradient(types: string[], alpha = 0.35): string | null {
   if (types.length === 0) {
     return null;
   }
@@ -108,10 +108,10 @@ export function getTypeGradient(types: string[]): string | null {
   if (first === undefined) {
     return null;
   }
-  const firstColor = hexToRgba(getTypeColor(first), 0.35);
+  const firstColor = hexToRgba(getTypeColor(first), alpha);
   if (second === undefined) {
     return firstColor;
   }
-  const secondColor = hexToRgba(getTypeColor(second), 0.35);
+  const secondColor = hexToRgba(getTypeColor(second), alpha);
   return `linear-gradient(to right, ${firstColor} 0%, ${firstColor} 50%, ${secondColor} 50%, ${secondColor} 100%)`;
 }

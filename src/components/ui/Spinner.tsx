@@ -12,7 +12,7 @@ export function Spinner() {
         <circle cx="24" cy="24" r="6" fill="#ffffff" stroke="#000000" strokeWidth="3" />
         <circle cx="24" cy="24" r="2.5" fill="#000000" />
       </svg>
-      <p className="mt-4 text-sm font-semibold">Cargando...</p>
+      <p className="mt-4 text-sm font-semibold dark:text-white">Cargando...</p>
     </div>
   );
 }

@@ -22,10 +22,10 @@ export function Pagination({
   onPageSizeChange,
 }: PaginationProps) {
   const buttonClassName =
-    "rounded-lg border-2 border-black bg-gray-100 p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none";
+    "rounded-lg border-2 border-black bg-gray-100 p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none dark:border-white dark:bg-gray-800 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]";
 
   return (
-    <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+    <div className="mt-8 flex flex-wrap items-center justify-center gap-4 dark:text-white">
       <button
         type="button"
         onClick={() => onPageChange(page - 1)}
@@ -79,7 +79,7 @@ export function Pagination({
             }
           }}
           aria-label="Pokémon por página"
-          className="appearance-none rounded-lg border-2 border-black bg-gray-100 py-1 pr-8 pl-3 font-semibold"
+          className="appearance-none rounded-lg border-2 border-black bg-gray-100 py-1 pr-8 pl-3 font-semibold dark:border-white dark:bg-gray-800"
         >
           {PAGE_SIZES.map((size) => (
             <option key={size} value={size}>

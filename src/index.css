@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  @apply bg-white dark:bg-gray-950;
+}
+
 /*
 :root {
   --text: #6b6375;
