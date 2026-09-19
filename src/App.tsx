@@ -3,6 +3,7 @@ import { Pagination } from "./components/Pagination.tsx";
 import { PokemonGrid } from "./components/PokemonGrid.tsx";
 import { PokemonModal } from "./components/PokemonModal.tsx";
 import { SearchBar } from "./components/SearchBar.tsx";
+import { ThemeToggle } from "./components/ThemeToggle.tsx";
 import { TypeFilter } from "./components/TypeFilter.tsx";
 import { ErrorMessage } from "./components/ui/ErrorMessage.tsx";
 import { Spinner } from "./components/ui/Spinner.tsx";
@@ -50,9 +51,12 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
       <main className="mx-auto w-full max-w-6xl px-4 py-8">
-        <h1 className="mb-8 text-center text-3xl font-bold">Pokédex</h1>
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <h1 className="text-3xl font-bold dark:text-white">Pokédex</h1>
+          <ThemeToggle />
+        </div>
         <div className="mb-4">
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
         </div>
@@ -69,7 +73,7 @@ function App() {
         ) : error !== null ? (
           <ErrorMessage message={error} onRetry={retry} />
         ) : totalFiltered === 0 ? (
-          <p className="py-16 text-center font-semibold">
+          <p className="py-16 text-center font-semibold dark:text-white">
             {showOnlyFavorites && favorites.length === 0 ?(
                 "Aún no tienes favoritos. Marca algunos desde el detalle de un Pokémon."
             ): selectedTypes.length > 0 ?(

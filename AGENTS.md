@@ -20,6 +20,10 @@ for folder structure.
 - Hooks: `use` prefix, files in camelCase (`usePokemonList.ts`).
 - Types and interfaces: in `src/types/`, exported as `interface Pokemon { ... }`.
 - Styling: Tailwind classes only. No CSS modules, no per-component `.css` files.
+- Dark mode uses class-based `dark:` variants (registered once in
+  `src/index.css` with `@custom-variant dark (&:where(.dark, .dark *))`,
+  plus `body { @apply bg-white dark:bg-gray-950; }`). Never rely on the
+  default `prefers-color-scheme` media variant.
 - Comments: only to explain "why", not "what".
 - Never call setState synchronously inside a useEffect body. React's
   `react-hooks/set-state-in-effect` rule rejects this. Mutate state from

@@ -107,7 +107,7 @@ function SpriteGallery({ sprites }: { sprites: PokemonSprites }) {
             ) : (
               <div className="h-20 w-20 rounded bg-gray-200" />
             )}
-            <span className="text-xs text-gray-600">{cell.label}</span>
+            <span className="text-xs text-gray-600 dark:text-gray-300">{cell.label}</span>
           </div>
         ))}
       </div>
@@ -164,11 +164,11 @@ function AbilityList({ abilities }: { abilities: PokemonAbility[] }) {
         {abilities.map((entry) => (
           <span
             key={entry.ability.name}
-            className="flex items-center gap-1 rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold"
+            className="flex items-center gap-1 rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold dark:border-white dark:bg-gray-800"
           >
             {formatName(entry.ability.name)}
             {entry.is_hidden && (
-              <span className="rounded bg-amber-200 px-1.5 py-0.5 text-xs">
+              <span className="rounded bg-amber-200 px-1.5 py-0.5 text-xs text-black">
                 Oculta
               </span>
             )}
@@ -193,18 +193,18 @@ function NavigationChip({
   if (id === currentId) {
     return (
       <span
-        className="cursor-not-allowed rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold opacity-50"
+        className="cursor-not-allowed rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold opacity-50 dark:border-white dark:bg-gray-800"
       >
         {formatName(name)}
       </span>
     );
   }
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(id)}
-      className="rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-    >
+      <button
+        type="button"
+        onClick={() => onSelect(id)}
+        className="rounded-lg border-2 border-black bg-gray-100 px-3 py-1 text-sm font-semibold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:border-white dark:bg-gray-800 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+      >
       {formatName(name)}
     </button>
   );
@@ -307,9 +307,9 @@ function ModalHeader({ title, onClose, closeButtonRef, favorite }: ModalHeaderPr
           type="button"
           onClick={favorite.onToggle}
           aria-pressed={favorite.isFavorite}
-          aria-label={favoriteLabel}
-          title={favoriteLabel}
-          className="shrink-0 rounded-lg border-2 border-black bg-gray-100 p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            aria-label={favoriteLabel}
+            title={favoriteLabel}
+            className="shrink-0 rounded-lg border-2 border-black bg-gray-100 p-1 text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:border-white dark:bg-gray-800 dark:text-white dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
         >
           <svg
             className="h-5 w-5"
@@ -327,10 +327,10 @@ function ModalHeader({ title, onClose, closeButtonRef, favorite }: ModalHeaderPr
       <button
         key="close"
         type="button"
-        ref={closeButtonRef}
-        onClick={onClose}
-        aria-label="Cerrar"
-        className="shrink-0 rounded-lg border-2 border-black bg-gray-100 p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            ref={closeButtonRef}
+            onClick={onClose}
+            aria-label="Cerrar"
+            className="shrink-0 rounded-lg border-2 border-black bg-gray-100 p-1 text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:border-white dark:bg-gray-800 dark:text-white dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
       >
         <svg
           className="h-5 w-5"
@@ -393,7 +393,7 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
         className="fixed inset-0 flex items-center justify-center bg-black/50 p-4"
         onMouseDown={handleOverlayMouseDown}
       >
-        <div className="w-full max-w-2xl rounded-lg border-2 border-black bg-white p-6">
+        <div className="w-full max-w-2xl rounded-lg border-2 border-black bg-white p-6 dark:border-white dark:bg-gray-900 dark:text-white">
           <ModalHeader
             title="Cargando..."
             onClose={onClose}
@@ -413,7 +413,7 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
         className="fixed inset-0 flex items-center justify-center bg-black/50 p-4"
         onMouseDown={handleOverlayMouseDown}
       >
-        <div className="w-full max-w-2xl rounded-lg border-2 border-black bg-white p-6">
+        <div className="w-full max-w-2xl rounded-lg border-2 border-black bg-white p-6 dark:border-white dark:bg-gray-900 dark:text-white">
           <ModalHeader
             title="Error"
             onClose={onClose}
@@ -442,7 +442,7 @@ export function PokemonModal({ pokemonId, onClose, onSelect }: PokemonModalProps
         role="dialog"
         aria-modal="true"
         aria-labelledby="pokemon-modal-title"
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg border-2 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg border-2 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:border-white dark:bg-gray-900 dark:text-white dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]"
       >
         <ModalHeader
           title={`${dexNumber} ${formatName(pokemon.name)}`}

@@ -20,13 +20,13 @@ export function TypeFilter({
   onToggleFavorites,
 }: TypeFilterProps) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 dark:text-white">
       <button
         type="button"
         onClick={onToggleFavorites}
         aria-pressed={showOnlyFavorites}
-        className={`rounded-lg border-2 border-black px-3 py-1 text-sm font-semibold ${
-          showOnlyFavorites ? "bg-[#F7D02C] text-black" : "bg-gray-100 text-black"
+        className={`rounded-lg border-2 border-black px-3 py-1 text-sm font-semibold dark:border-white ${
+          showOnlyFavorites ? "bg-[#F7D02C] text-black" : "bg-gray-100 text-black dark:bg-gray-800 dark:text-white"
         }`}
       >
         Solo favoritos
@@ -45,8 +45,8 @@ export function TypeFilter({
             onClick={() => onToggle(type)}
             aria-pressed={isActive}
             style={isActive ? { backgroundColor } : undefined}
-            className={`rounded-lg border-2 border-black px-3 py-1 text-sm font-semibold ${
-              isActive ? textColor : "bg-gray-100 text-black"
+            className={`rounded-lg border-2 border-black px-3 py-1 text-sm font-semibold dark:border-white ${
+              isActive ? textColor : "bg-gray-100 text-black dark:bg-gray-800 dark:text-white"
             }`}
           >
             {formatName(type)}

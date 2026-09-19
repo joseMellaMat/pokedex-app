@@ -18,10 +18,10 @@ export function PokemonCardImage({ id, alt }: PokemonCardImageProps) {
 
   if (step >= 2) {
     return (
-      <div className="flex h-24 w-24 items-center justify-center rounded bg-gray-200">
+      <div className="flex h-24 w-24 items-center justify-center rounded bg-gray-200 dark:bg-gray-700">
         <span
           aria-hidden="true"
-          className="text-5xl leading-none font-bold text-black select-none"
+          className="text-5xl leading-none font-bold text-black select-none dark:text-white"
         >
           ?
         </span>
